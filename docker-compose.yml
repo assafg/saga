@@ -1,0 +1,26 @@
+version: '2.2'
+services:
+    # microservice:
+    #   build: '.'
+    #   environment:
+    #     NODE_ENV: 'isolated'
+    #   ports:
+    #     - '3000:3000'
+    #   volumes:
+    #     - './node_modules:/var/app/node_modules:ro'
+    #     - './src:/var/app/src'
+    #     - './config:/var/app/config'
+    #     - './package.json:/var/app/package.json'
+    #     - './package-lock.json:/var/app/package-lock.json'
+    #   entrypoint: ''
+    #   command: 'npm start'
+    mongodb:
+        image: 'mongo'
+        # environment:
+        #     - MONGO_INITDB_ROOT_USERNAME=publish
+        #     - MONGO_INITDB_ROOT_PASSWORD=qweqwe123
+        volumes:
+            - ./mongo-data:/data/db
+            - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js
+        ports:
+            - '27017-27019:27017-27019'
