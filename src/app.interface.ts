@@ -1,6 +1,5 @@
 import { IsNotEmpty, IsUrl, IsUUID, ValidateNested, IsNotEmptyObject } from 'class-validator';
 import { Type } from 'class-transformer';
-export interface App {}
 
 export class CallbackHook {
     @IsNotEmpty()
@@ -30,4 +29,3 @@ export class TransactionStep {
     @ValidateNested()
     failureHook: CallbackHook;
 }
-

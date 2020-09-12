@@ -1,10 +1,10 @@
-import { Controller, Get, Post, Param, Put, Body } from '@nestjs/common';
+import { Controller, Get, Post, Param, Put, Body, Logger } from '@nestjs/common';
 import { AppService } from './app.service';
-import { TransactionStep } from './app.interface';
+import { TransactionStep, Transaction } from './app.interface';
 
 @Controller()
 export class AppController {
-    constructor(private readonly appService: AppService) {}
+    constructor(private readonly appService: AppService, private readonly logger: Logger) {}
 
     @Get('/health')
     health(): string {
@@ -23,22 +23,34 @@ export class AppController {
     }
 
     @Get('/:id')
-    getTransactionById(@Param('id') id: string) {
+    getTransactionById(@Param('id') id: string): Promise<Transaction> {
         return this.appService.getTransactionById(id);
     }
 
     @Put('/')
-    addStep(@Body() step: TransactionStep) {
+    addStep(@Body() step: TransactionStep): Promise<string> {
         return this.appService.addStep(step);
     }
 
     @Post('/commit/:id')
-    commit(@Param('id') id: string) {
-        return this.appService.commit(id);
+    async commit(@Param('id') id: string): Promise<string> {
+        try {
+            await this.appService.commit(id);
+            return 'ok';
+        } catch (err) {
+            this.logger.error(err);
+            return err;
+        }
     }
 
     @Post('/rollback/:id')
-    rollback(@Param('id') id: string) {
-        return this.appService.rollback(id);
+    async rollback(@Param('id') id: string): Promise<string> {
+        try {
+            await this.appService.rollback(id);
+            return 'ok';
+        } catch (err) {
+            this.logger.error(err);
+            return err;
+        }
     }
 }

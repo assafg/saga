@@ -5,11 +5,10 @@ import { Mongo } from './mongo';
 
 describe('Test Service', () => {
     let service: AppService;
-    let mongo;
 
-    let txCollection = {
+    const txCollection = {
         findOne: null,
-        insertOne: null
+        insertOne: null,
     };
     beforeEach(async () => {
         const db = {
@@ -30,7 +29,6 @@ describe('Test Service', () => {
         }).compile();
 
         service = app.get<AppService>(AppService);
-        mongo = app.get<Mongo>(Mongo);
         service.onApplicationBootstrap();
     });
 
@@ -41,7 +39,7 @@ describe('Test Service', () => {
     it('should find by id', async () => {
         txCollection.findOne = jest.fn().mockResolvedValueOnce({
             id: '123',
-        })
+        });
         const tx = await service.getTransactionById('123');
         expect(tx).toEqual({
             id: '123',
@@ -51,6 +49,6 @@ describe('Test Service', () => {
     it('should start transaction', async () => {
         txCollection.insertOne = jest.fn().mockResolvedValueOnce('ok');
         await service.startTransaction();
-        expect(txCollection.insertOne).toBeCalledTimes(1)
-    })
+        expect(txCollection.insertOne).toBeCalledTimes(1);
+    });
 });

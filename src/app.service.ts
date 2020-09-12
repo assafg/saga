@@ -1,4 +1,4 @@
-import { Injectable, Logger, OnApplicationBootstrap, OnModuleInit } from '@nestjs/common';
+import { Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common';
 import { v1 } from 'uuid';
 import fetch, { Response } from 'node-fetch';
 import { Db } from 'mongodb';
@@ -13,7 +13,7 @@ export class AppService implements OnApplicationBootstrap {
 
     constructor(private readonly logger: Logger, private readonly mongo: Mongo) {}
 
-    async onApplicationBootstrap() {
+    onApplicationBootstrap(): void {
         this.db = this.mongo.db;
     }
 
@@ -42,7 +42,7 @@ export class AppService implements OnApplicationBootstrap {
         }
     }
 
-    async addStep({ id, successHook, failureHook }: TransactionStep): Promise<unknown> {
+    async addStep({ id, successHook, failureHook }: TransactionStep): Promise<string> {
         try {
             const result = await this.db.collection(txColName).findOneAndUpdate(
                 { _id: id },
@@ -84,7 +84,7 @@ export class AppService implements OnApplicationBootstrap {
                 throw new Error(`Transaction [${transactionId}] does not exist`);
             }
             const promises = [];
-            for await (let hook of transaction.successHooks) {
+            for await (const hook of transaction.successHooks) {
                 promises.push(this.callHook(transactionId, hook));
             }
             await Promise.all(promises);
@@ -104,7 +104,7 @@ export class AppService implements OnApplicationBootstrap {
                 throw new Error(`Transaction [${transactionId}] does not exist`);
             }
             const promises = [];
-            for await (let hook of transaction.failureHooks) {
+            for await (const hook of transaction.failureHooks) {
                 promises.push(this.callHook(transactionId, hook));
             }
             await Promise.all(promises);
